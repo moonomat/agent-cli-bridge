@@ -1,0 +1,29 @@
+{
+  "name": "@moonomat/agent-cli-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Local sidecar that drives your authenticated agent CLIs (Claude Code, Codex) and exposes them over HTTP/SSE, so a web app can use your Claude/ChatGPT subscriptions as its agent backend with client-executed tools.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.6",
+    "partial-json": "^0.1.7"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.28.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

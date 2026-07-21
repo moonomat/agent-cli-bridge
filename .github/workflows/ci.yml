@@ -1,0 +1,24 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      # The bundle must run standalone (no node_modules, no package.json beside it).
+      - run: |
+          mkdir -p /tmp/standalone
+          cp dist/agent-cli-bridge.mjs dist/mcp-proxy-server.cjs /tmp/standalone/
+          cd /tmp/standalone && node agent-cli-bridge.mjs --help
