@@ -12,7 +12,10 @@
  *    tools ~2026-07-17; see the spawn comment). The pairing token rides in
  *    the proxy's owner-only schema file, never argv, so it stays out of `ps`.
  *  - Codex's own tools are disabled: read-only sandbox, shell/view-image
- *    feature flags off, web search off. approvalPolicy "never" covers the rest.
+ *    feature flags off, web search off.
+ *  - approvalPolicy is "on-request", NOT "never": since codex 0.153 every MCP
+ *    tool call goes through an approval prompt, and "never" auto-rejects it
+ *    ("MCP tool call requires approval, but approval policy is never").
  *  - MCP tool-call approval prompts (server->client requests) are auto-allowed:
  *    the only reachable tools are the client's own, which it executes itself.
  *  - Output notifications are translated into Claude-API-style stream events so
@@ -103,6 +106,9 @@ export const codexEngine: Engine = {
     const configOverrides = [
       "-c", `mcp_servers.custom-tools.command=${JSON.stringify(proxy.command)}`,
       "-c", `mcp_servers.custom-tools.args=${JSON.stringify(proxy.args)}`,
+      // "approve" = pre-approved: codex >= 0.153 otherwise prompts for every
+      // MCP call (the default mode "auto" still prompts for non-read-only tools).
+      "-c", 'mcp_servers.custom-tools.default_tools_approval_mode="approve"',
       "-c", "features.shell_tool=false",
       "-c", "features.view_image_tool=false",
       "-c", "tools.web_search=false",
@@ -393,7 +399,9 @@ export const codexEngine: Engine = {
       const threadParams: Record<string, unknown> = {
         model: model.id,
         cwd: scratchDir,
-        approvalPolicy: "never",
+        // "on-request" so MCP tool-call approvals reach answerServerRequest
+        // (codex >= 0.153 prompts for every MCP call; "never" rejects them).
+        approvalPolicy: "on-request",
         sandbox: "read-only",
         ...(systemPrompt ? { developerInstructions: systemPrompt + ONE_TOOL_PER_TURN_RULE } : {}),
       };

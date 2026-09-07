@@ -1,6 +1,6 @@
 {
   "name": "@moonomat/agent-cli-bridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "license": "MIT",
   "description": "Local sidecar that drives your authenticated agent CLIs (Claude Code, Codex) and exposes them over HTTP/SSE, so a web app can use your Claude/ChatGPT subscriptions as its agent backend with client-executed tools.",
